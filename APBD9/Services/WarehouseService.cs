@@ -30,7 +30,6 @@ namespace APBD9.Services
             using var tx = conn.BeginTransaction();
             try
             {
-                // 1) Cena jednostkowa
                 decimal unitPrice;
                 using (var cmd = new SqlCommand(
                     "SELECT Price FROM Product WHERE IdProduct=@p",
@@ -43,7 +42,6 @@ namespace APBD9.Services
                     unitPrice = (decimal)priceObj;
                 }
 
-                // 2) Id zamówienia spełniającego warunki
                 int idOrder;
                 using (var cmd = new SqlCommand(
                     @"SELECT IdOrder FROM [Order]
@@ -59,7 +57,6 @@ namespace APBD9.Services
                     idOrder = (int)idOrderObj;
                 }
 
-                // 3) Sprawdź, czy nie zostało już zrealizowane
                 using (var cmd = new SqlCommand(
                     "SELECT COUNT(1) FROM Product_Warehouse WHERE IdOrder=@o",
                     conn, tx))
@@ -70,7 +67,6 @@ namespace APBD9.Services
                         throw new InvalidOperationException("Order already fulfilled");
                 }
 
-                // 4) Ustaw FullfilledAt
                 using (var cmd = new SqlCommand(
                     "UPDATE [Order] SET FulfilledAt = GETDATE() WHERE IdOrder=@o",
                     conn, tx))
@@ -79,7 +75,6 @@ namespace APBD9.Services
                     await cmd.ExecuteNonQueryAsync();
                 }
 
-                // 5) Wstaw nowy wpis w Product_Warehouse
                 int newId;
                 using (var cmd = new SqlCommand(
                     @"INSERT INTO Product_Warehouse

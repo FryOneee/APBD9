@@ -40,7 +40,6 @@ namespace APBD9.Controllers
             }
             catch (SqlException ex)
             {
-                // błąd połączenia / zapytania SQL
                 return StatusCode(500, new { error = "Database error: " + ex.Message });
             }
             catch (Exception ex)
